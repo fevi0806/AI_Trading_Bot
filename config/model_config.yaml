@@ -1,0 +1,4 @@
+filters: 64
+kernel_size: 3
+lstm_units: 50
+learning_rate: 0.001

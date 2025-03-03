@@ -1,0 +1,82 @@
+2025-03-02 22:03:16,949 - INFO - Trade Executed: {
+    "action": "BUY",
+    "ticker": "AAPL",
+    "quantity": 0,
+    "price": 241.83999633789062
+}
+2025-03-02 22:04:44,284 - INFO - Trade Executed: {
+    "action": "BUY",
+    "ticker": "AAPL",
+    "quantity": 100,
+    "price": 241.83999633789062
+}
+2025-03-02 22:07:46,173 - INFO - Trade Executed: {
+    "action": "BUY",
+    "ticker": "AAPL",
+    "quantity": 100,
+    "price": 241.83999633789062
+}
+2025-03-02 22:24:37,191 - INFO - Trade Executed: {
+    "action": "BUY",
+    "ticker": "AAPL",
+    "quantity": 100,
+    "price": 241.83999633789062
+}
+2025-03-02 22:25:40,487 - INFO - Trade Executed: {
+    "action": "BUY",
+    "ticker": "AAPL",
+    "quantity": 100,
+    "price": 241.83999633789062
+}
+2025-03-02 22:32:08,265 - INFO - Trade Executed: {
+    "action": "BUY",
+    "ticker": "AAPL",
+    "quantity": 41,
+    "price": 241.83999633789062
+}
+2025-03-02 22:52:34,243 - INFO - LokiHandler is available
+2025-03-02 22:54:39,855 - INFO - LokiHandler is available
+2025-03-02 23:15:01,437 - INFO - LokiHandler is available
+2025-03-02 23:17:21,307 - INFO - LokiHandler is available
+2025-03-02 23:22:39,465 - INFO - LokiHandler is available
+2025-03-02 23:22:46,137 - INFO - Trade Executed: {
+    "action": "BUY",
+    "ticker": "AAPL",
+    "quantity": 41,
+    "price": 241.83999633789062
+}
+2025-03-02 23:22:59,819 - INFO - LokiHandler is available
+2025-03-02 23:23:06,430 - INFO - Trade Executed: {
+    "action": "BUY",
+    "ticker": "AAPL",
+    "quantity": 41,
+    "price": 241.83999633789062
+}
+2025-03-02 23:23:19,580 - INFO - LokiHandler is available
+2025-03-02 23:23:26,181 - INFO - Trade Executed: {
+    "action": "BUY",
+    "ticker": "AAPL",
+    "quantity": 41,
+    "price": 241.83999633789062
+}
+2025-03-02 23:24:24,445 - INFO - LokiHandler is available
+2025-03-02 23:24:31,172 - INFO - Trade Executed: {
+    "action": "BUY",
+    "ticker": "AAPL",
+    "quantity": 41,
+    "price": 241.83999633789062
+}
+2025-03-02 23:30:28,269 - INFO - LokiHandler is available
+2025-03-02 23:30:35,402 - INFO - Trade Executed: {
+    "action": "BUY",
+    "ticker": "AAPL",
+    "quantity": 41,
+    "price": 241.83999633789062
+}
+2025-03-02 23:32:01,576 - INFO - LokiHandler is available
+2025-03-02 23:32:04,182 - INFO - Trade Executed: {
+    "action": "BUY",
+    "ticker": "AAPL",
+    "quantity": 41,
+    "price": 241.83999633789062
+}
