@@ -1,19 +1,38 @@
-from utils.logger import setup_logger
+import zmq
+import json
+import logging
 
 class RiskAgent:
-    def __init__(self, comm_framework):  # Accept comm_framework as an argument
-        self.logger = setup_logger()
-        self.comm_framework = comm_framework  # Store comm_framework
+    def __init__(self):
+        self.context = zmq.Context()
 
-    def calculate_position_size(self, portfolio_value=100000, risk_per_trade=0.01):
-        """
-        Calculate the position size based on risk tolerance.
-        """
-        return portfolio_value * risk_per_trade
+        # Subscribe to Market Data
+        self.sub_socket = self.context.socket(zmq.SUB)
+        self.sub_socket.connect("tcp://localhost:5557")
+        self.sub_socket.setsockopt_string(zmq.SUBSCRIBE, "")
+
+        # Request-Reply Server for Risk Queries
+        self.rep_socket = self.context.socket(zmq.REP)
+        self.rep_socket.bind("tcp://*:5556")
+
+        logging.info("Risk Agent connected to CommFramework.")
+
+    def evaluate_trade_risk(self, ticker):
+        """Dummy function returning a static risk score"""
+        risk_data = {"ticker": ticker, "risk_score": 0.02}
+        return risk_data
+
+    def listen_for_requests(self):
+        while True:
+            request = self.rep_socket.recv_json()
+            ticker = request.get("ticker")
+            risk_data = self.evaluate_trade_risk(ticker)
+            self.rep_socket.send_json(risk_data)
 
     def start(self):
-        self.logger.info("Risk Agent started.")
-        while True:
-            position_size = self.calculate_position_size()
-            self.logger.info(f"Calculated position size: {position_size}")
-            self.comm_framework.send_risk_assessment({"position_size": position_size})  # Send risk assessment
+        """Start RiskAgent: listen for risk requests and subscribe to market data."""
+        self.listen_for_requests()
+
+if __name__ == "__main__":
+    agent = RiskAgent()
+    agent.start()

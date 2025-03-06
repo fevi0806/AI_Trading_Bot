@@ -8,8 +8,11 @@ from utils.logger import setup_logger
 
 class MarketDataAgent:
     def __init__(self, comm_framework):
-        self.logger = setup_logger()
-        self.comm_framework = comm_framework
+        self.comm = comm_framework
+        self.pub_socket = self.comm.create_publisher(5555)
+
+    def run(self):
+        print("Market Data Agent Running...")
 
     def fetch_market_data(self, ticker="AAPL"):
         """
