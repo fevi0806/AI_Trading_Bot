@@ -1,38 +1,58 @@
-import sys
+import threading
+import logging
 import os
+import tensorflow as tf
 
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+# Suppress TensorFlow logs
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '3'
+tf.get_logger().setLevel('ERROR')
+TF_ENABLE_ONEDNN_OPTS=0
+import sys
+
+# Ensure Python can find all modules
+sys.path.append(os.path.abspath(os.path.dirname(__file__)))
+
+from agents.comm_framework import CommFramework
 from agents.market_data_agent import MarketDataAgent
-from agents.strategy_agent import StrategyAgent
-from agents.execution_agent import ExecutionAgent
+from agents.sentiment_agent import SentimentAgent
+from agents.strategy_agent_2 import StrategyAgent
 from agents.risk_agent import RiskAgent
-from agents.comm_framework import CommunicationFramework
-from utils.logger import setup_logger
+from agents.execution_agent import ExecutionAgent
+from agents.logging_monitoring_agent import LoggingMonitoringAgent
+import threading
+import logging
 
-def main():
-    # Set up logging
-    logger = setup_logger()
-    logger.info("Starting AI Trading Bot...")
+# Initialize CommFramework instance
+comm_framework = CommFramework()
 
-    # Initialize communication framework
-    comm_framework = CommunicationFramework()
+# Dictionary now stores **classes**, not instances
+AGENTS = {
+    "MarketDataAgent": MarketDataAgent,
+    "SentimentAgent": SentimentAgent,
+    "StrategyAgent": StrategyAgent,
+    "RiskAgent": RiskAgent,
+    "ExecutionAgent": ExecutionAgent,
+    "LoggingMonitoringAgent": LoggingMonitoringAgent
+}
 
-    # Initialize agents
-    market_data_agent = MarketDataAgent(comm_framework)
-    strategy_agent = StrategyAgent(comm_framework)
-    risk_agent = RiskAgent(comm_framework)
-    execution_agent = ExecutionAgent(comm_framework)
-
+def start_agent(agent_class, name):
+    """Start an agent in a separate thread."""
     try:
-        # Start the bot
-        market_data_agent.start()
-        strategy_agent.start()
-        risk_agent.start()
-        execution_agent.start()
-    except KeyboardInterrupt:
-        logger.info("AI Trading Bot stopped by user.")
+        agent = agent_class(comm_framework)  # ✅ Now we create an instance here
+        agent.run()
+        logging.info(f"{name} started successfully.")
     except Exception as e:
-        logger.error(f"Error: {e}")
+        logging.error(f"Failed to start {name}: {e}")
 
 if __name__ == "__main__":
-    main()
+    threads = []
+
+    # Start all agents in parallel
+    for agent_name, agent_class in AGENTS.items():
+        thread = threading.Thread(target=start_agent, args=(agent_class, agent_name))
+        thread.start()
+        threads.append(thread)
+
+    # Keep the main script running
+    for thread in threads:
+        thread.join()
