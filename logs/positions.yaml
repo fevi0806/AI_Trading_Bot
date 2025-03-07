@@ -1,3 +1,5 @@
 positions:
   /var/log/ai_trading_bot.log: "667038"
+  /var/log/execution_agent.log: "2331536"
+  /var/log/strategy_agent.log: "8429"
   /var/log/trading.log: "0"

@@ -1,9 +1,12 @@
 import zmq
 import logging
-import os
 import sys
-# Ensure Python can find all modules
-sys.path.append(os.path.abspath(os.path.dirname(__file__)))
+import os
+
+# Ensure Python can find the parent directory
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+from agents.comm_framework import CommFramework  # ✅ Correct import path
 from utils.logger import setup_logger
 
 # Set up logging

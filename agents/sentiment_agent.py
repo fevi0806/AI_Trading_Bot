@@ -5,6 +5,10 @@ import logging
 import sys
 import os
 
+# Ensure Python can find the parent directory
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
+from agents.comm_framework import CommFramework  # ✅ Correct import path
 venv_path = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".venv", "Lib", "site-packages"))
 if venv_path not in sys.path:
     sys.path.insert(0, venv_path)
