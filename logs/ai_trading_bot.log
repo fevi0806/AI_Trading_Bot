@@ -6621,3 +6621,127 @@ Datetime
 2025-03-03 22:09:03,808 - utils.logger - INFO - Fetched market data: Ticker                  Datetime        AAPL        AAPL        AAPL        AAPL  AAPL Ticker
 129    2025-03-03 16:39:00+00:00  240.888702  240.888702  240.888702  240.888702     0   AAPL
 2025-03-03 22:09:03,810 - utils.logger - ERROR - Error: 'Close'
+2025-03-03 22:30:54,877 - utils.logger - INFO - Starting AI Trading Bot...
+2025-03-03 22:30:56,236 - utils.logger - INFO - Market Data Agent started.
+2025-03-03 22:30:56,713 - utils.logger - INFO - Fetched market data: Ticker                  Datetime        AAPL        AAPL        AAPL        AAPL  AAPL Ticker
+150    2025-03-03 17:00:00+00:00  241.720001  241.720001  241.720001  241.720001     0   AAPL
+2025-03-03 22:30:56,714 - utils.logger - ERROR - Error: 'Close'
+2025-03-03 22:51:51,429 - __main__ - INFO - Started agents/market_data_agent.py (PID: 11464)
+2025-03-03 22:51:51,445 - __main__ - INFO - Started agents/sentiment_agent.py (PID: 26524)
+2025-03-03 22:51:51,459 - __main__ - INFO - Started agents/strategy_agent.py (PID: 24624)
+2025-03-03 22:51:51,472 - __main__ - INFO - Started agents/risk_agent.py (PID: 28032)
+2025-03-03 22:51:51,486 - __main__ - INFO - Started agents/execution_agent.py (PID: 1376)
+2025-03-03 22:51:51,500 - __main__ - INFO - Started agents/logging_monitoring_agent.py (PID: 23924)
+2025-03-03 22:54:32,865 - __main__ - INFO - Started agents/market_data_agent.py (PID: 20416)
+2025-03-03 22:54:32,887 - __main__ - INFO - Started agents/sentiment_agent.py (PID: 28972)
+2025-03-03 22:54:32,902 - __main__ - INFO - Started agents/strategy_agent.py (PID: 16932)
+2025-03-03 22:54:32,917 - __main__ - INFO - Started agents/risk_agent.py (PID: 34044)
+2025-03-03 22:54:32,932 - __main__ - INFO - Started agents/execution_agent.py (PID: 9348)
+2025-03-03 22:54:32,947 - __main__ - INFO - Started agents/logging_monitoring_agent.py (PID: 34600)
+2025-03-03 22:55:38,977 - __main__ - INFO - Started agents/market_data_agent.py (PID: 35048)
+2025-03-03 22:55:38,991 - __main__ - INFO - Started agents/sentiment_agent.py (PID: 6240)
+2025-03-03 22:55:39,003 - __main__ - INFO - Started agents/strategy_agent.py (PID: 24844)
+2025-03-03 22:55:39,015 - __main__ - INFO - Started agents/risk_agent.py (PID: 29272)
+2025-03-03 22:55:39,029 - __main__ - INFO - Started agents/execution_agent.py (PID: 30848)
+2025-03-03 22:55:39,043 - __main__ - INFO - Started agents/logging_monitoring_agent.py (PID: 1844)
+2025-03-03 23:07:19,224 - __main__ - ERROR - Failed to start MarketDataAgent: MarketDataAgent.__init__() missing 1 required positional argument: 'comm_framework'
+2025-03-03 23:07:19,273 - __main__ - ERROR - Failed to start StrategyAgent: StrategyAgent.__init__() missing 1 required positional argument: 'comm_framework'
+2025-03-03 23:07:19,275 - agents.comm_framework - INFO - Subscriber connected to port 5557 with filter 'NEWS'
+2025-03-03 23:07:19,278 - agents.comm_framework - INFO - Publisher bound to port 5558
+2025-03-03 23:07:19,278 - __main__ - ERROR - Failed to start RiskAgent: RiskAgent.__init__() missing 1 required positional argument: 'comm_framework'
+2025-03-03 23:07:19,280 - __main__ - ERROR - Failed to start ExecutionAgent: ExecutionAgent.__init__() missing 1 required positional argument: 'comm_framework'
+2025-03-03 23:07:19,282 - __main__ - ERROR - Failed to start LoggingMonitoringAgent: name 'CommFramework' is not defined
+2025-03-03 23:07:20,068 - __main__ - ERROR - Failed to start SentimentAgent: Failed to import transformers.models.bert.modeling_tf_bert because of the following error (look up to see its traceback):
+Your currently installed version of Keras is Keras 3, but this is not yet supported in Transformers. Please install the backwards-compatible tf-keras package with `pip install tf-keras`.
+2025-03-03 23:08:22,890 - __main__ - ERROR - Failed to start MarketDataAgent: MarketDataAgent.__init__() missing 1 required positional argument: 'comm_framework'
+2025-03-03 23:08:22,911 - agents.comm_framework - INFO - Subscriber connected to port 5557 with filter 'NEWS'
+2025-03-03 23:08:22,911 - __main__ - ERROR - Failed to start StrategyAgent: StrategyAgent.__init__() missing 1 required positional argument: 'comm_framework'
+2025-03-03 23:08:22,921 - __main__ - ERROR - Failed to start RiskAgent: RiskAgent.__init__() missing 1 required positional argument: 'comm_framework'
+2025-03-03 23:08:22,922 - agents.comm_framework - INFO - Publisher bound to port 5558
+2025-03-03 23:08:22,923 - __main__ - ERROR - Failed to start ExecutionAgent: ExecutionAgent.__init__() missing 1 required positional argument: 'comm_framework'
+2025-03-03 23:08:22,923 - __main__ - ERROR - Failed to start LoggingMonitoringAgent: name 'CommFramework' is not defined
+2025-03-03 23:08:23,259 - __main__ - ERROR - Failed to start SentimentAgent: Failed to import transformers.models.bert.modeling_tf_bert because of the following error (look up to see its traceback):
+Your currently installed version of Keras is Keras 3, but this is not yet supported in Transformers. Please install the backwards-compatible tf-keras package with `pip install tf-keras`.
+2025-03-03 23:16:45,915 - agents.comm_framework - ERROR - Failed to create subscriber on port NEWS: 'int' object has no attribute 'context'
+2025-03-03 23:19:52,524 - agents.comm_framework - INFO - Subscriber connected to port 5557 with filter 'NEWS'
+2025-03-03 23:19:52,526 - agents.comm_framework - INFO - Publisher bound to port 5558
+2025-03-03 23:19:55,192 - tensorflow - WARNING - From C:\Users\David\OneDrive\AI_Trading_Bot\.venv\lib\site-packages\tf_keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+2025-03-03 23:20:47,781 - tensorflow - WARNING - From C:\Users\David\OneDrive\AI_Trading_Bot\.venv\lib\site-packages\tf_keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+2025-03-03 23:22:01,263 - tensorflow - WARNING - From C:\Users\David\OneDrive\AI_Trading_Bot\.venv\lib\site-packages\tf_keras\src\losses.py:2976: The name tf.losses.sparse_softmax_cross_entropy is deprecated. Please use tf.compat.v1.losses.sparse_softmax_cross_entropy instead.
+
+2025-03-03 23:24:49,139 - root - ERROR - Failed to start MarketDataAgent: 'MarketDataAgent' object has no attribute 'run'
+2025-03-03 23:24:49,141 - root - ERROR - Failed to start ExecutionAgent: 'CommFramework' object has no attribute 'receive_risk_assessment'
+2025-03-03 23:24:49,142 - root - ERROR - Failed to start RiskAgent: 'RiskAgent' object has no attribute 'run'
+2025-03-03 23:24:49,145 - root - ERROR - Failed to start StrategyAgent: 'StrategyAgent' object has no attribute 'run'
+2025-03-03 23:25:39,931 - root - INFO - MarketDataAgent started successfully.
+2025-03-03 23:25:39,936 - root - ERROR - Failed to start ExecutionAgent: 'CommFramework' object has no attribute 'receive_risk_assessment'
+2025-03-03 23:25:39,939 - root - ERROR - Failed to start RiskAgent: 'RiskAgent' object has no attribute 'run'
+2025-03-03 23:25:39,940 - root - ERROR - Failed to start StrategyAgent: 'StrategyAgent' object has no attribute 'run'
+2025-03-03 23:32:07,667 - root - INFO - MarketDataAgent started successfully.
+2025-03-03 23:32:07,673 - root - INFO - RiskAgent started successfully.
+2025-03-03 23:32:07,673 - root - ERROR - Failed to start ExecutionAgent: CommFramework.receive_risk_assessment() missing 1 required positional argument: 'port'
+2025-03-03 23:32:07,675 - root - INFO - StrategyAgent started successfully.
+2025-03-03 23:33:13,081 - root - INFO - MarketDataAgent started successfully.
+2025-03-03 23:33:13,085 - root - INFO - RiskAgent started successfully.
+2025-03-03 23:33:13,086 - root - ERROR - Failed to start ExecutionAgent: CommFramework.receive_risk_assessment() missing 1 required positional argument: 'port'
+2025-03-03 23:33:13,088 - root - INFO - StrategyAgent started successfully.
+2025-03-03 23:35:23,771 - root - INFO - MarketDataAgent started successfully.
+2025-03-03 23:35:23,775 - root - INFO - RiskAgent started successfully.
+2025-03-03 23:35:23,776 - root - ERROR - Failed to start ExecutionAgent: 'ExecutionAgent' object has no attribute 'comm'
+2025-03-03 23:35:23,779 - root - INFO - StrategyAgent started successfully.
+2025-03-03 23:37:21,798 - root - INFO - MarketDataAgent started successfully.
+2025-03-03 23:37:21,802 - root - INFO - RiskAgent started successfully.
+2025-03-03 23:37:21,804 - agents.execution_agent - INFO - Execution Agent Running...
+2025-03-03 23:37:21,809 - root - INFO - StrategyAgent started successfully.
+2025-03-03 23:40:53,807 - root - INFO - MarketDataAgent started successfully.
+2025-03-03 23:40:53,811 - root - INFO - RiskAgent started successfully.
+2025-03-03 23:40:53,813 - agents.execution_agent - INFO - Execution Agent Running...
+2025-03-03 23:40:53,817 - root - INFO - StrategyAgent started successfully.
+2025-03-03 23:49:57,618 - utils.logger - ERROR - Error during backtest: [Errno 2] No such file or directory: 'data/datasets/historical_data.csv'
+2025-03-03 23:52:45,065 - utils.logger - INFO - Historical data loaded successfully.
+2025-03-03 23:52:45,237 - utils.logger - INFO - Training predictive model...
+2025-03-03 23:52:45,280 - utils.logger - ERROR - Error during backtest: Invalid dtype: object
+2025-03-03 23:53:33,990 - utils.logger - INFO - Historical data loaded successfully.
+2025-03-03 23:53:34,074 - utils.logger - INFO - Training predictive model...
+2025-03-03 23:53:34,097 - utils.logger - ERROR - Error during backtest: Invalid dtype: object
+2025-03-03 23:55:30,416 - utils.logger - INFO - Historical data loaded successfully.
+2025-03-03 23:55:30,514 - utils.logger - INFO - Training predictive model...
+2025-03-03 23:55:30,537 - utils.logger - ERROR - Error during backtest: Invalid dtype: object
+2025-03-03 23:58:06,288 - utils.logger - INFO - Historical data loaded successfully.
+2025-03-03 23:58:06,374 - utils.logger - INFO - Training predictive model...
+2025-03-03 23:58:06,506 - utils.logger - ERROR - Error during backtest: Exception encountered when calling Conv1D.call().
+
+[1mNegative dimension size caused by subtracting 3 from 2 for '{{node sequential_1/conv1d_1/convolution}} = Conv2D[T=DT_FLOAT, data_format="NHWC", dilations=[1, 1, 1, 1], explicit_paddings=[], padding="VALID", strides=[1, 1, 1, 1], use_cudnn_on_gpu=true](sequential_1/conv1d_1/convolution/ExpandDims, sequential_1/conv1d_1/convolution/ExpandDims_1)' with input shapes: [?,1,2,1], [1,3,1,64].[0m
+
+Arguments received by Conv1D.call():
+  • inputs=tf.Tensor(shape=(None, 2, 1), dtype=float32)
+2025-03-04 00:00:40,509 - utils.logger - INFO - Historical data loaded successfully.
+2025-03-04 00:00:40,593 - utils.logger - INFO - Training predictive model...
+2025-03-04 00:00:40,594 - utils.logger - ERROR - Error during backtest: name 'np' is not defined
+2025-03-04 00:01:32,291 - utils.logger - INFO - Historical data loaded successfully.
+2025-03-04 00:01:32,340 - utils.logger - INFO - Training predictive model...
+2025-03-04 00:01:32,341 - utils.logger - ERROR - Error during backtest: name 'np' is not defined
+2025-03-04 00:02:55,464 - utils.logger - INFO - Historical data loaded successfully.
+2025-03-04 00:02:55,511 - utils.logger - INFO - Training predictive model...
+2025-03-04 00:02:55,513 - utils.logger - ERROR - Error during backtest: TensorFlowTrainer.fit() got an unexpected keyword argument 'X_train'
+2025-03-04 00:04:00,736 - utils.logger - INFO - Historical data loaded successfully.
+2025-03-04 00:04:00,740 - utils.logger - ERROR - Error during backtest: name 'X_train' is not defined
+2025-03-04 00:05:12,762 - utils.logger - INFO - Historical data loaded successfully.
+2025-03-04 00:05:12,766 - utils.logger - ERROR - Error during backtest: PredictiveModel.__init__() missing 1 required positional argument: 'input_shape'
+2025-03-04 00:08:58,072 - utils.logger - INFO - Historical data loaded successfully.
+2025-03-04 00:08:58,076 - utils.logger - ERROR - Error during backtest: PredictiveModel.__init__() missing 1 required positional argument: 'input_shape'
+2025-03-04 00:09:43,807 - utils.logger - INFO - Historical data loaded successfully.
+2025-03-04 00:09:43,811 - utils.logger - ERROR - Error during backtest: name 'X_train' is not defined
+2025-03-04 00:11:13,447 - utils.logger - INFO - Historical data loaded successfully.
+2025-03-04 00:11:13,450 - utils.logger - ERROR - Error during backtest: name 'X_train' is not defined
+2025-03-04 00:13:07,086 - utils.logger - INFO - Historical data loaded successfully.
+2025-03-04 00:13:07,089 - utils.logger - ERROR - Error during backtest: name 'X_train' is not defined
+2025-03-04 00:14:58,283 - utils.logger - INFO - Historical data loaded successfully.
+2025-03-04 00:14:58,351 - utils.logger - INFO - Training predictive model...
+2025-03-04 00:14:58,351 - utils.logger - INFO - Training started...
+2025-03-04 00:14:59,398 - utils.logger - INFO - Training completed.
+2025-03-04 00:14:59,398 - utils.logger - INFO - Running backtest...
+2025-03-04 00:14:59,476 - utils.logger - INFO - BUY at 151.00, New Position: 66.23 shares
+2025-03-04 00:14:59,480 - utils.logger - INFO - Backtest completed. Results saved to data/backtest_results.csv.

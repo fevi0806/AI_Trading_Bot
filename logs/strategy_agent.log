@@ -1,0 +1,98 @@
+2025-03-06 19:04:57,338 - INFO - ✅ Loaded PPO model for QQQ.
+2025-03-06 19:04:57,432 - INFO - ✅ Loaded PPO model for VGT.
+2025-03-06 19:04:57,470 - INFO - ✅ Loaded PPO model for SOXX.
+2025-03-06 19:04:57,510 - INFO - ✅ Loaded PPO model for ARKK.
+2025-03-06 19:04:57,546 - INFO - ✅ Loaded PPO model for SPY.
+2025-03-06 19:04:57,558 - INFO -  Strategy Agent Initialized and Running...
+2025-03-06 19:05:00,527 - INFO -  Trade Signal Sent: {'ticker': 'QQQ', 'signal': 'HOLD'}
+2025-03-06 19:05:00,668 - INFO -  Trade Signal Sent: {'ticker': 'VGT', 'signal': 'SELL'}
+2025-03-06 19:05:00,773 - INFO -  Trade Signal Sent: {'ticker': 'SOXX', 'signal': 'SELL'}
+2025-03-06 19:05:00,881 - INFO -  Trade Signal Sent: {'ticker': 'ARKK', 'signal': 'SELL'}
+2025-03-06 19:05:00,988 - INFO -  Trade Signal Sent: {'ticker': 'SPY', 'signal': 'HOLD'}
+2025-03-06 19:06:01,103 - INFO -  Trade Signal Sent: {'ticker': 'QQQ', 'signal': 'HOLD'}
+2025-03-06 19:06:01,229 - INFO -  Trade Signal Sent: {'ticker': 'VGT', 'signal': 'SELL'}
+2025-03-06 19:06:01,355 - INFO -  Trade Signal Sent: {'ticker': 'SOXX', 'signal': 'SELL'}
+2025-03-06 19:06:01,464 - INFO -  Trade Signal Sent: {'ticker': 'ARKK', 'signal': 'SELL'}
+2025-03-06 19:06:01,574 - INFO -  Trade Signal Sent: {'ticker': 'SPY', 'signal': 'HOLD'}
+2025-03-06 19:06:42,744 - INFO - ✅ Loaded PPO model for QQQ.
+2025-03-06 19:06:42,751 - INFO - ✅ Loaded PPO model for VGT.
+2025-03-06 19:06:42,759 - INFO - ✅ Loaded PPO model for SOXX.
+2025-03-06 19:06:42,767 - INFO - ✅ Loaded PPO model for ARKK.
+2025-03-06 19:06:42,775 - INFO - ✅ Loaded PPO model for SPY.
+2025-03-06 19:06:42,787 - INFO -  Strategy Agent Initialized and Running...
+2025-03-06 19:06:43,613 - INFO -  Trade Signal Sent: {'ticker': 'QQQ', 'signal': 'HOLD'}
+2025-03-06 19:06:44,006 - INFO -  Trade Signal Sent: {'ticker': 'VGT', 'signal': 'SELL'}
+2025-03-06 19:06:44,215 - INFO -  Trade Signal Sent: {'ticker': 'SOXX', 'signal': 'SELL'}
+2025-03-06 19:06:44,455 - INFO -  Trade Signal Sent: {'ticker': 'ARKK', 'signal': 'SELL'}
+2025-03-06 19:06:44,660 - INFO -  Trade Signal Sent: {'ticker': 'SPY', 'signal': 'HOLD'}
+2025-03-06 19:07:00,211 - INFO - ✅ Loaded PPO model for QQQ.
+2025-03-06 19:07:00,218 - INFO - ✅ Loaded PPO model for VGT.
+2025-03-06 19:07:00,223 - INFO - ✅ Loaded PPO model for SOXX.
+2025-03-06 19:07:00,228 - INFO - ✅ Loaded PPO model for ARKK.
+2025-03-06 19:07:00,237 - INFO - ✅ Loaded PPO model for SPY.
+2025-03-06 19:07:00,247 - INFO -  Strategy Agent Initialized and Running...
+2025-03-06 19:07:00,895 - INFO -  Trade Signal Sent: {'ticker': 'QQQ', 'signal': 'HOLD'}
+2025-03-06 19:07:01,111 - INFO -  Trade Signal Sent: {'ticker': 'VGT', 'signal': 'SELL'}
+2025-03-06 19:07:01,298 - INFO -  Trade Signal Sent: {'ticker': 'SOXX', 'signal': 'SELL'}
+2025-03-06 19:07:01,454 - INFO -  Trade Signal Sent: {'ticker': 'ARKK', 'signal': 'SELL'}
+2025-03-06 19:07:01,623 - INFO -  Trade Signal Sent: {'ticker': 'SPY', 'signal': 'HOLD'}
+2025-03-06 19:08:01,912 - INFO -  Trade Signal Sent: {'ticker': 'QQQ', 'signal': 'HOLD'}
+2025-03-06 19:08:02,341 - INFO -  Trade Signal Sent: {'ticker': 'VGT', 'signal': 'SELL'}
+2025-03-06 19:08:02,636 - INFO -  Trade Signal Sent: {'ticker': 'SOXX', 'signal': 'SELL'}
+2025-03-06 19:08:02,778 - INFO -  Trade Signal Sent: {'ticker': 'ARKK', 'signal': 'SELL'}
+2025-03-06 19:08:03,020 - INFO -  Trade Signal Sent: {'ticker': 'SPY', 'signal': 'HOLD'}
+2025-03-06 19:09:03,231 - INFO -  Trade Signal Sent: {'ticker': 'QQQ', 'signal': 'HOLD'}
+2025-03-06 19:09:03,539 - INFO -  Trade Signal Sent: {'ticker': 'VGT', 'signal': 'SELL'}
+2025-03-06 19:09:03,686 - INFO -  Trade Signal Sent: {'ticker': 'SOXX', 'signal': 'SELL'}
+2025-03-06 19:09:03,826 - INFO -  Trade Signal Sent: {'ticker': 'ARKK', 'signal': 'SELL'}
+2025-03-06 19:09:04,179 - INFO -  Trade Signal Sent: {'ticker': 'SPY', 'signal': 'HOLD'}
+2025-03-06 19:10:04,385 - INFO -  Trade Signal Sent: {'ticker': 'QQQ', 'signal': 'HOLD'}
+2025-03-06 19:10:04,546 - INFO -  Trade Signal Sent: {'ticker': 'VGT', 'signal': 'SELL'}
+2025-03-06 19:10:04,702 - INFO -  Trade Signal Sent: {'ticker': 'SOXX', 'signal': 'SELL'}
+2025-03-06 19:10:04,874 - INFO -  Trade Signal Sent: {'ticker': 'ARKK', 'signal': 'SELL'}
+2025-03-06 19:10:05,184 - INFO -  Trade Signal Sent: {'ticker': 'SPY', 'signal': 'HOLD'}
+2025-03-06 19:11:05,411 - INFO -  Trade Signal Sent: {'ticker': 'QQQ', 'signal': 'HOLD'}
+2025-03-06 19:11:05,565 - INFO -  Trade Signal Sent: {'ticker': 'VGT', 'signal': 'SELL'}
+2025-03-06 19:11:05,754 - INFO -  Trade Signal Sent: {'ticker': 'SOXX', 'signal': 'SELL'}
+2025-03-06 19:11:05,926 - INFO -  Trade Signal Sent: {'ticker': 'ARKK', 'signal': 'SELL'}
+2025-03-06 19:11:06,082 - INFO -  Trade Signal Sent: {'ticker': 'SPY', 'signal': 'HOLD'}
+2025-03-06 19:12:06,275 - INFO -  Trade Signal Sent: {'ticker': 'QQQ', 'signal': 'HOLD'}
+2025-03-06 19:12:06,434 - INFO -  Trade Signal Sent: {'ticker': 'VGT', 'signal': 'SELL'}
+2025-03-06 19:12:06,601 - INFO -  Trade Signal Sent: {'ticker': 'SOXX', 'signal': 'SELL'}
+2025-03-06 19:12:06,757 - INFO -  Trade Signal Sent: {'ticker': 'ARKK', 'signal': 'SELL'}
+2025-03-06 19:12:06,912 - INFO -  Trade Signal Sent: {'ticker': 'SPY', 'signal': 'HOLD'}
+2025-03-06 19:13:07,118 - INFO -  Trade Signal Sent: {'ticker': 'QQQ', 'signal': 'HOLD'}
+2025-03-06 19:13:07,267 - INFO -  Trade Signal Sent: {'ticker': 'VGT', 'signal': 'SELL'}
+2025-03-06 19:13:07,451 - INFO -  Trade Signal Sent: {'ticker': 'SOXX', 'signal': 'SELL'}
+2025-03-06 19:13:07,592 - INFO -  Trade Signal Sent: {'ticker': 'ARKK', 'signal': 'SELL'}
+2025-03-06 19:13:07,763 - INFO -  Trade Signal Sent: {'ticker': 'SPY', 'signal': 'HOLD'}
+2025-03-06 19:14:07,965 - INFO -  Trade Signal Sent: {'ticker': 'QQQ', 'signal': 'HOLD'}
+2025-03-06 19:14:08,118 - INFO -  Trade Signal Sent: {'ticker': 'VGT', 'signal': 'SELL'}
+2025-03-06 19:14:08,274 - INFO -  Trade Signal Sent: {'ticker': 'SOXX', 'signal': 'SELL'}
+2025-03-06 19:14:08,430 - INFO -  Trade Signal Sent: {'ticker': 'ARKK', 'signal': 'SELL'}
+2025-03-06 19:14:08,569 - INFO -  Trade Signal Sent: {'ticker': 'SPY', 'signal': 'HOLD'}
+2025-03-06 19:15:08,790 - INFO -  Trade Signal Sent: {'ticker': 'QQQ', 'signal': 'HOLD'}
+2025-03-06 19:15:08,950 - INFO -  Trade Signal Sent: {'ticker': 'VGT', 'signal': 'SELL'}
+2025-03-06 19:15:09,150 - INFO -  Trade Signal Sent: {'ticker': 'SOXX', 'signal': 'SELL'}
+2025-03-06 19:15:09,320 - INFO -  Trade Signal Sent: {'ticker': 'ARKK', 'signal': 'SELL'}
+2025-03-06 19:15:09,476 - INFO -  Trade Signal Sent: {'ticker': 'SPY', 'signal': 'HOLD'}
+2025-03-06 19:16:09,818 - INFO -  Trade Signal Sent: {'ticker': 'QQQ', 'signal': 'HOLD'}
+2025-03-06 19:16:10,120 - INFO -  Trade Signal Sent: {'ticker': 'VGT', 'signal': 'SELL'}
+2025-03-06 19:16:11,030 - INFO -  Trade Signal Sent: {'ticker': 'SOXX', 'signal': 'SELL'}
+2025-03-06 19:16:11,365 - INFO -  Trade Signal Sent: {'ticker': 'ARKK', 'signal': 'SELL'}
+2025-03-06 19:16:11,524 - INFO -  Trade Signal Sent: {'ticker': 'SPY', 'signal': 'HOLD'}
+2025-03-06 19:17:11,747 - INFO -  Trade Signal Sent: {'ticker': 'QQQ', 'signal': 'HOLD'}
+2025-03-06 19:17:11,918 - INFO -  Trade Signal Sent: {'ticker': 'VGT', 'signal': 'SELL'}
+2025-03-06 19:17:12,071 - INFO -  Trade Signal Sent: {'ticker': 'SOXX', 'signal': 'SELL'}
+2025-03-06 19:17:12,259 - INFO -  Trade Signal Sent: {'ticker': 'ARKK', 'signal': 'SELL'}
+2025-03-06 19:17:12,428 - INFO -  Trade Signal Sent: {'ticker': 'SPY', 'signal': 'HOLD'}
+2025-03-06 19:18:12,657 - INFO -  Trade Signal Sent: {'ticker': 'QQQ', 'signal': 'HOLD'}
+2025-03-06 19:18:12,954 - INFO -  Trade Signal Sent: {'ticker': 'VGT', 'signal': 'SELL'}
+2025-03-06 19:18:13,126 - INFO -  Trade Signal Sent: {'ticker': 'SOXX', 'signal': 'SELL'}
+2025-03-06 19:18:13,314 - INFO -  Trade Signal Sent: {'ticker': 'ARKK', 'signal': 'SELL'}
+2025-03-06 19:18:13,554 - INFO -  Trade Signal Sent: {'ticker': 'SPY', 'signal': 'HOLD'}
+2025-03-06 19:19:13,741 - INFO -  Trade Signal Sent: {'ticker': 'QQQ', 'signal': 'HOLD'}
+2025-03-06 19:19:13,948 - INFO -  Trade Signal Sent: {'ticker': 'VGT', 'signal': 'SELL'}
+2025-03-06 19:19:14,117 - INFO -  Trade Signal Sent: {'ticker': 'SOXX', 'signal': 'SELL'}
+2025-03-06 19:19:14,274 - INFO -  Trade Signal Sent: {'ticker': 'ARKK', 'signal': 'SELL'}
+2025-03-06 19:19:14,430 - INFO -  Trade Signal Sent: {'ticker': 'SPY', 'signal': 'HOLD'}
