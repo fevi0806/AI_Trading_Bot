@@ -20,7 +20,7 @@ class SentimentAgent:
     def __init__(self, comm_framework):
         """Initialize Sentiment Agent."""
         self.comm = comm_framework
-        self.sub_socket = self.comm.create_subscriber(5557, "NEWS")
+        self.sub_socket = comm_framework.create_subscriber(5557, "NEWS")
         self.pub_socket = self.comm.create_publisher(5558)
         self.sentiment_pipeline = pipeline("sentiment-analysis", model="ProsusAI/finbert")
 

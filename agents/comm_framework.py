@@ -1,53 +1,90 @@
 import zmq
 import json
-import threading
 import logging
+import threading
+import requests
+from pythonjsonlogger import jsonlogger
 
-logging.basicConfig(level=logging.INFO)
+# Loki Logging Configuration
+LOKI_URL = "http://localhost:3100/loki/api/v1/push"
+logger = logging.getLogger("CommFramework")
+logger.setLevel(logging.INFO)
+
+logHandler = logging.StreamHandler()
+formatter = jsonlogger.JsonFormatter()
+logHandler.setFormatter(formatter)
+logger.addHandler(logHandler)
 
 class CommFramework:
     def __init__(self):
+        """Initializes the ZeroMQ communication framework."""
         self.context = zmq.Context()
 
-        # PUB-SUB for trade signals
-        self.trade_pub = self.context.socket(zmq.PUB)
-        self.trade_pub.bind("tcp://*:5557")
+        # Trade Signal Publisher (For Strategy → Execution)
+        self.trade_signal_pub = self.create_publisher(5557)
 
-        # PUB-SUB for execution feedback
-        self.execution_pub = self.context.socket(zmq.PUB)
-        self.execution_pub.bind("tcp://*:5559")
+        # Market Data Publisher (For Market Data → Strategy & Sentiment)
+        self.market_data_pub = self.create_publisher(5555)
 
-        # REQ-REP for risk agent
-        self.risk_rep = self.context.socket(zmq.REP)
-        self.risk_rep.bind("tcp://*:5561")
+        # Sentiment Data Publisher (For Sentiment → Strategy)
+        self.sentiment_data_pub = self.create_publisher(5556)
 
-        # REQ-REP for sentiment agent
-        self.sentiment_rep = self.context.socket(zmq.REP)
-        self.sentiment_rep.bind("tcp://*:5563")
+        # Execution Feedback Publisher (For Execution → Risk & Strategy)
+        self.execution_feedback_pub = self.create_publisher(5559)
 
-        logging.info("✅ CommFramework Initialized")
+        # Log Subscriber (For Logging & Monitoring)
+        self.log_sub = self.create_subscriber(5560)
+
+        # Request-Reply for direct agent communication
+        self.rep_socket = self.context.socket(zmq.REP)
+        self.rep_socket.bind("tcp://*:5561")
+
+        logger.info("✅ CommFramework Initialized")
+
+    def create_publisher(self, port):
+        """Creates and binds a ZMQ publisher socket."""
+        socket = self.context.socket(zmq.PUB)
+        socket.bind(f"tcp://*:{port}")
+        logger.info(f"📡 Publisher bound on port {port}")
+        return socket
+
+    def create_subscriber(self, port, topic=""):
+        """Creates and connects a ZMQ subscriber socket."""
+        socket = self.context.socket(zmq.SUB)
+        socket.connect(f"tcp://localhost:{port}")
+        socket.setsockopt_string(zmq.SUBSCRIBE, topic)
+        logger.info(f"🔍 Subscriber connected to port {port} with topic '{topic}'")
+        return socket
+
+    def listen_for_requests(self):
+        """Handles agent requests (e.g., risk assessments, trade execution feedback)."""
+        while True:
+            request = self.rep_socket.recv_json()
+            logger.info(f"📥 Received request: {request}")
+
+            response = {"status": "success", "response": f"Processed {request}"}
+            self.rep_socket.send_json(response)
+            self.log_to_loki({"event": "Processed Agent Request", "request": request})
+
+    def log_to_loki(self, log_data):
+        """Sends logs to Loki."""
+        payload = {
+            "streams": [
+                {
+                    "labels": "{service=\"CommFramework\"}",
+                    "entries": [{"ts": json.dumps(log_data)}],
+                }
+            ]
+        }
+        try:
+            requests.post(LOKI_URL, json=payload)
+        except requests.RequestException as e:
+            logger.error(f"❌ Failed to send log to Loki: {e}")
 
     def start(self):
-        """Starts listening for incoming requests."""
-        threading.Thread(target=self.listen_for_risk, daemon=True).start()
-        threading.Thread(target=self.listen_for_sentiment, daemon=True).start()
-        logging.info("✅ CommFramework Running...")
-
-    def listen_for_risk(self):
-        """Listens for risk assessment requests."""
-        while True:
-            request = self.risk_rep.recv_json()
-            logging.info(f"📡 Risk Assessment Request: {request}")
-            response = {"status": "approved", "risk_level": "low"}
-            self.risk_rep.send_json(response)
-
-    def listen_for_sentiment(self):
-        """Listens for sentiment analysis requests."""
-        while True:
-            request = self.sentiment_rep.recv_json()
-            logging.info(f"📰 Sentiment Analysis Request: {request}")
-            response = {"status": "processed", "sentiment_score": 0.75}
-            self.sentiment_rep.send_json(response)
+        """Starts the communication framework."""
+        threading.Thread(target=self.listen_for_requests, daemon=True).start()
+        logger.info("🚀 CommFramework is now running!")
 
 if __name__ == "__main__":
     comm = CommFramework()

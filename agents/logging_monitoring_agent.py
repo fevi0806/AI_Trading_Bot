@@ -12,9 +12,7 @@ logger = logging.getLogger(__name__)
 
 class LoggingMonitoringAgent:
     def __init__(self, comm_framework):
-        self.comm = comm_framework
-        self.sub_socket = self.comm.create_subscriber(5560)  # Log messages
-        self.log_storage = []
+        self.sub_socket = comm_framework.create_subscriber(5560)  # Log messages
 
     def run(self):
         """Continuously collect logs from agents and send to Loki."""

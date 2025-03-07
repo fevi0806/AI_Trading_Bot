@@ -5,23 +5,21 @@ import logging
 logging.basicConfig(level=logging.INFO)
 
 class RiskManagementAgent:
-    def __init__(self):
-        self.context = zmq.Context()
-        self.feedback_socket = self.context.socket(zmq.SUB)
-        self.feedback_socket.connect("tcp://localhost:5559")
-        self.feedback_socket.setsockopt_string(zmq.SUBSCRIBE, "")
+    def __init__(self, comm_framework):
+        self.sub_socket = comm_framework.create_subscriber(5558)  # Strategy signals
+        self.pub_socket = comm_framework.create_publisher(5559)  # Send risk-approved orders
 
-        logging.info("✅ Risk Management Agent Initialized")
-
-    def analyze_risk(self, execution_feedback):
-        logging.info(f"🔍 Analyzing execution feedback: {execution_feedback}")
+    def assess_risk(self, signal):
+        # Dummy risk logic: Allow all trades
+        return signal
 
     def run(self):
         while True:
-            message = self.feedback_socket.recv_string()
-            execution_feedback = json.loads(message)
-            logging.info(f"📥 Received Execution Feedback: {execution_feedback}")
-            self.analyze_risk(execution_feedback)
+            message = self.sub_socket.recv_string()
+            trade_signal = json.loads(message)
+            risk_checked_signal = self.assess_risk(trade_signal)
+            self.pub_socket.send_string(json.dumps(risk_checked_signal))
+            logging.info(f"📊 Risk Management Approved: {risk_checked_signal}")
 
 if __name__ == "__main__":
     agent = RiskManagementAgent()

@@ -9,7 +9,7 @@ from utils.logger import setup_logger
 class MarketDataAgent:
     def __init__(self, comm_framework):
         self.comm = comm_framework
-        self.pub_socket = self.comm.create_publisher(5555)
+        self.pub_socket = comm_framework.create_publisher(5555)
 
     def run(self):
         print("Market Data Agent Running...")
