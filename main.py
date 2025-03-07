@@ -1,5 +1,11 @@
 import threading
 import logging
+import sys
+import os
+
+# Ensure Python can find the parent directory
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 from agents.comm_framework import CommFramework
 from agents.market_data_agent import MarketDataAgent
 from agents.sentiment_agent import SentimentAgent
