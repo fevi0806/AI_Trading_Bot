@@ -1,59 +1,65 @@
-import sys
-import os
-import time
-import yfinance as yf
+import zmq
 import json
+import time
 import logging
+import os
+import yfinance as yf
+import pandas as pd
+
+# Ensure Python can find the parent directory
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
+
 from utils.logger import setup_logger
+from agents.comm_framework import CommFramework  # Correct import path
 
 class MarketDataAgent:
     def __init__(self, comm_framework):
         self.comm = comm_framework
-        self.pub_socket = self.comm.create_publisher(5555)  # Market Data Publisher
-        self.logger = setup_logger("MarketDataAgent")
+        self.publisher = self.comm.create_publisher(5555)  # Market Data Publisher
+        self.logger = setup_logger("MarketDataAgent", "logs/market_data_agent.log")
+        self.tickers = ["QQQ", "SOXX", "SPY", "VGT", "ARKK"]  # ✅ Updated tickers
 
-    def fetch_market_data(self, ticker="AAPL"):
-        """
-        Fetch market data using Yahoo Finance (for both real-time & historical data).
-        """
+    def fetch_data(self, ticker):
+        """Fetch historical market data for a given ticker."""
         try:
-            data = yf.download(ticker, period="1d", interval="1m")
-            data = data.droplevel(level=0, axis=1)  # Remove the "Price" level from columns
-            data = data.reset_index()
-            data["Ticker"] = ticker
+            data = yf.download(ticker, period="1y", interval="1d")
+            if data.empty:
+                self.logger.error(f"❌ No data fetched for {ticker}.")
+                return None
+            self.logger.info(f"📈 Data Fetched for {ticker}, Shape: {data.shape}")
             return data
         except Exception as e:
-            self.logger.error(f"❌ Failed to fetch market data: {e}")
+            self.logger.error(f"❌ Error fetching data for {ticker}: {e}")
             return None
 
     def run(self):
-        """
-        Continuously fetch market data and send it over ZMQ.
-        """
+        """Continuously fetch market data and publish it."""
         self.logger.info("🚀 Market Data Agent Started.")
-        tickers = ["SPY", "QQQ", "VGT", "SOXX", "ARKK"]
-
         while True:
-            for ticker in tickers:
-                data = self.fetch_market_data(ticker)
+            for ticker in self.tickers:
+                data = self.fetch_data(ticker)
                 if data is not None:
-                    last_row = data.iloc[-1]
-                    market_data = {
-                        "timestamp": last_row["Datetime"].isoformat(),
-                        "ticker": last_row["Ticker"],
-                        "close": float(last_row["Close"]),
-                        "high": float(last_row["High"]),
-                        "low": float(last_row["Low"]),
-                        "open": float(last_row["Open"]),
-                        "volume": int(last_row["Volume"])
-                    }
+                    market_data = data.reset_index()
 
-                    self.pub_socket.send_string(json.dumps(market_data))
-                    self.logger.info(f"📡 Market Data Sent: {market_data}")
-                
-                time.sleep(5)  # Fetch data every 5 seconds (adjustable)
+                    # ✅ Ensure the first column is explicitly named 'Date'
+                    if market_data.columns[0] != "Date":
+                        market_data.rename(columns={market_data.columns[0]: "Date"}, inplace=True)
 
-if __name__ == "__main__":
-    from agents.comm_framework import CommFramework
-    agent = MarketDataAgent(CommFramework())
-    agent.run()
+                    # ✅ Verify 'Date' column exists before proceeding
+                    if "Date" not in market_data.columns:
+                        self.logger.error(f"❌ Missing 'Date' column in fetched data for {ticker}. Skipping...")
+                        continue
+
+                    market_data.columns = market_data.columns.map(str)  # Convert columns to strings
+                    market_data["Date"] = market_data["Date"].astype(str)  # Convert timestamps to string
+
+                    try:
+                        market_data_json = market_data.to_dict(orient="records")
+                        json_message = json.dumps(market_data_json)
+                        self.publisher.send_string(json_message)
+                        self.logger.info(f"📤 Published data for {ticker}")
+                    except Exception as e:
+                        self.logger.error(f"❌ JSON Serialization Error for {ticker}: {e}")
+                time.sleep(60)  # Fetch data every 60 seconds
+            time.sleep(3600)  # Fetch new data every hour
