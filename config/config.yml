@@ -1,0 +1,24 @@
+ports:
+  MarketDataAgent:
+    publisher: 5555
+    subscriber: 5556
+
+  SentimentAgent:
+    publisher: 5557
+    subscriber: 5558
+
+  StrategyAgent:
+    publisher: 5559
+    subscriber: 5560
+
+  RiskManagementAgent:
+    publisher: 5561
+    subscriber: 5562
+
+  ExecutionAgent:
+    publisher: 5563
+    subscriber: 5564
+
+  LoggingMonitoringAgent:
+    publisher: 5565
+    subscriber: 5566
