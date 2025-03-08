@@ -42,23 +42,32 @@ class MarketDataAgent:
                 if data is not None:
                     market_data = data.reset_index()
 
-                    # ✅ Ensure the first column is explicitly named 'Date'
-                    if market_data.columns[0] != "Date":
-                        market_data.rename(columns={market_data.columns[0]: "Date"}, inplace=True)
+                    # ✅ Flatten Multi-Index Columns (Fixing the 'Date' Issue)
+                    if isinstance(market_data.columns, pd.MultiIndex):
+                        market_data.columns = ['_'.join(col).strip() if isinstance(col, tuple) else col for col in market_data.columns]
+
+                    # ✅ Ensure the first column is named 'Date'
+                    if "Date_" in market_data.columns:
+                        market_data.rename(columns={"Date_": "Date"}, inplace=True)
+
+                    # ✅ Log column names after renaming
+                    self.logger.info(f"✅ Columns after flattening: {list(market_data.columns)}")
 
                     # ✅ Verify 'Date' column exists before proceeding
                     if "Date" not in market_data.columns:
-                        self.logger.error(f"❌ Missing 'Date' column in fetched data for {ticker}. Skipping...")
-                        continue
+                        self.logger.error(f"❌ 'Date' column still missing in {ticker} data. Full columns: {list(market_data.columns)}")
+                        continue  # Skip this ticker
 
-                    market_data.columns = market_data.columns.map(str)  # Convert columns to strings
+                    # ✅ Convert all column names to strings to avoid tuple key error
+                    market_data.columns = [str(col) for col in market_data.columns]
                     market_data["Date"] = market_data["Date"].astype(str)  # Convert timestamps to string
 
                     try:
+                        # ✅ Explicitly log structure before sending
                         market_data_json = market_data.to_dict(orient="records")
                         json_message = json.dumps(market_data_json)
                         self.publisher.send_string(json_message)
-                        self.logger.info(f"📤 Published data for {ticker}")
+                        self.logger.info(f"📤 Published data for {ticker}: {market_data_json[:2]}...")  # Show sample data
                     except Exception as e:
                         self.logger.error(f"❌ JSON Serialization Error for {ticker}: {e}")
                 time.sleep(60)  # Fetch data every 60 seconds

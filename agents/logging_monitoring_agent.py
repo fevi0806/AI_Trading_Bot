@@ -9,9 +9,8 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from agents.comm_framework import CommFramework  # ✅ Correct import path
 from utils.logger import setup_logger
 
-# Set up logging
-setup_logger()
-logger = logging.getLogger(__name__)
+# Set up logging correctly
+logger = setup_logger("LoggingMonitoringAgent", "logs/logging_monitoring_agent.log")
 
 class LoggingMonitoringAgent:
     def __init__(self, comm_framework):

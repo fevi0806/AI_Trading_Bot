@@ -16,7 +16,7 @@ class RiskManagementAgent:
         self.context = zmq.Context()
 
         self.risk_socket = self.context.socket(zmq.REP)
-        self.risk_socket.connect("tcp://localhost:5561")
+        self.risk_socket.connect("tcp://localhost:5558")
 
         self.execution_sub = self.context.socket(zmq.SUB)
         self.execution_sub.connect("tcp://localhost:5559")
