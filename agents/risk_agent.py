@@ -1,56 +1,71 @@
 import zmq
 import json
+import time
 import logging
-import sys
 import os
+import sys
 
 # Ensure Python can find the parent directory
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from agents.comm_framework import CommFramework  # ✅ Correct import path
-logging.basicConfig(level=logging.INFO)
+from utils.logger import setup_logger
+from agents.comm_framework import CommFramework
 
 class RiskManagementAgent:
     def __init__(self, comm_framework):
+        """Initialize the Risk Management Agent with communication framework."""
         self.comm = comm_framework
-        self.context = zmq.Context()
+        self.logger = setup_logger("RiskManagementAgent", "logs/risk_management.log")
 
-        self.risk_socket = self.context.socket(zmq.REP)
-        self.risk_socket.connect("tcp://localhost:5558")
+        try:
+            self.subscriber = self.comm.create_subscriber("RiskManagementAgent")
+            self.publisher = self.comm.create_publisher("RiskManagementAgent")
+        except Exception as e:
+            self.subscriber = None
+            self.publisher = None
+            self.logger.error(f"❌ RiskManagementAgent Subscriber/Publisher Init Error: {e}")
 
-        self.execution_sub = self.context.socket(zmq.SUB)
-        self.execution_sub.connect("tcp://localhost:5559")
-        self.execution_sub.setsockopt_string(zmq.SUBSCRIBE, "")
+    def evaluate_risk(self, trade_signal):
+        """Evaluate the risk of a given trade signal."""
+        self.logger.info(f"🔍 Evaluating Trade Signal: {trade_signal}")
 
-        logging.info("🛡️ Risk Management Agent Initialized")
+        # Placeholder Risk Evaluation Logic
+        risk_assessment = {"status": "Approved", "details": "No risk detected"}
 
-    def assess_risk(self, ticker, action):
-        """Evaluates if a trade should be executed."""
-        if action == "BUY":
-            return {"approved": True, "reason": "Low risk detected"}
-        elif action == "SELL":
-            return {"approved": True, "reason": "Selling condition met"}
-        return {"approved": False, "reason": "Default HOLD"}
-
-    def listen_for_risk_requests(self):
-        """Handles risk validation requests from Strategy Agent."""
-        while True:
-            request = self.risk_socket.recv_json()
-            ticker, action = request["ticker"], request["action"]
-            response = self.assess_risk(ticker, action)
-            self.risk_socket.send_json(response)
-
-    def monitor_executions(self):
-        """Monitors trade executions from Execution Agent."""
-        while True:
-            message = self.execution_sub.recv_json()
-            logging.info(f"📊 Execution Feedback: {message}")
+        return risk_assessment
 
     def run(self):
-        logging.info("🛡️ Risk Management Agent Running")
-        self.listen_for_risk_requests()
+        """Continuously listen for trade signals and process risk assessment."""
+        self.logger.info("🛡️ Risk Management Agent Started.")
 
-if __name__ == "__main__":
-    comm_framework = CommFramework()
-    agent = RiskManagementAgent(comm_framework)
-    agent.run()
+        if not self.subscriber or not self.publisher:
+            self.logger.error("❌ RiskManagementAgent failed to initialize communication sockets.")
+            return
+
+        while True:
+            try:
+                if self.subscriber.poll(500):  # Timeout after 500ms
+                    message = self.subscriber.recv_string()
+                    trade_signal = json.loads(message)
+                    self.logger.info(f"📥 Received Trade Signal: {trade_signal}")
+
+                    # Evaluate the risk of the trade
+                    risk_result = self.evaluate_risk(trade_signal)
+
+                    # Send the risk assessment result
+                    response = {
+                        "ticker": trade_signal.get("ticker", "Unknown"),
+                        "signal": trade_signal.get("signal", "Unknown"),
+                        "risk_status": risk_result["status"],
+                        "details": risk_result["details"],
+                    }
+
+                    self.comm.send_message("RiskManagementAgent", json.dumps(response))
+                    self.logger.info(f"🛡️ Risk Evaluation Sent: {response}")
+
+                else:
+                    self.logger.debug("🔄 No new messages in RiskManagementAgent.")
+
+            except Exception as e:
+                self.logger.error(f"❌ Error in RiskManagementAgent: {e}")
+            time.sleep(1)

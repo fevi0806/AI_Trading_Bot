@@ -1,27 +1,50 @@
 import zmq
 import logging
-import sys
 import os
+import sys
+import time
 
 # Ensure Python can find the parent directory
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from agents.comm_framework import CommFramework  # ✅ Correct import path
 from utils.logger import setup_logger
-
-# Set up logging correctly
-logger = setup_logger("LoggingMonitoringAgent", "logs/logging_monitoring_agent.log")
+from agents.comm_framework import CommFramework
 
 class LoggingMonitoringAgent:
     def __init__(self, comm_framework):
-        self.sub_socket = comm_framework.create_subscriber(5560)  # Log messages
+        """Initialize the Logging Monitoring Agent to collect logs from all agents."""
+        self.comm = comm_framework
+        self.logger = setup_logger("LoggingMonitoringAgent", "logs/logging_monitoring_agent.log")
+        self.subscribers = {}
+
+        # Define agents to monitor
+        self.agents = ["MarketDataAgent", "SentimentAgent", "StrategyAgent", "RiskManagementAgent", "ExecutionAgent"]
+
+        # Subscribe to logs from all agents
+        for agent in self.agents:
+            try:
+                self.subscribers[agent] = self.comm.create_subscriber(agent, topic="LOG")
+                self.logger.info(f"✅ Subscribed to logs from {agent}")
+            except Exception as e:
+                self.logger.error(f"❌ Failed to subscribe to logs from {agent}: {e}")
+                self.subscribers[agent] = None  # Mark as failed
 
     def run(self):
-        """Continuously collect logs from agents and send to Loki."""
+        """Continuously listen for logs from all agents."""
+        self.logger.info("📊 Logging Monitoring Agent Started.")
+
         while True:
-            try:
-                log_message = self.sub_socket.recv_string()
-                self.log_storage.append(log_message)
-                logger.info(f"Log Collected: {log_message}")
-            except Exception as e:
-                logger.error(f"LoggingMonitoringAgent Error: {e}")
+            for agent, subscriber in self.subscribers.items():
+                if subscriber is None:
+                    continue  # Skip if the subscription failed
+
+                try:
+                    if subscriber.poll(100):  # 100 ms timeout to prevent blocking
+                        message = subscriber.recv_string()
+                        self.logger.info(f"📝 {agent} Log: {message}")
+                except zmq.ZMQError as e:
+                    self.logger.error(f"❌ Error receiving log from {agent}: {e}")
+                except Exception as e:
+                    self.logger.error(f"❌ Unexpected error in LoggingMonitoringAgent for {agent}: {e}")
+
+            time.sleep(1)

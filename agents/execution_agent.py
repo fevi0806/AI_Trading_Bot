@@ -14,8 +14,8 @@ from utils.logger import setup_logger
 class ExecutionAgent:
     def __init__(self, comm_framework):
         self.comm = comm_framework
-        self.trade_sub = self.comm.create_subscriber(5558)  # Trade Signal Subscriber
-        self.execution_pub = self.comm.create_publisher(5559)  # Execution Feedback Publisher
+        self.trade_sub = self.comm.create_subscriber(5564)  # Trade Signal Subscriber
+        self.execution_pub = self.comm.create_publisher(5563)  # Execution Feedback Publisher
         self.logger = setup_logger("ExecutionAgent", "logs/execution_agent.log")
 
     def execute_trade(self, signal):
