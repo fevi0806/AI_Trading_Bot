@@ -2,9 +2,11 @@ import zmq
 import logging
 import yaml
 import os
-import sys
+import psutil
+import time
 
 # Ensure Python can find the parent directory
+import sys
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from utils.logger import setup_logger
@@ -17,13 +19,12 @@ class CommFramework:
         self.subscribers = {}
         self.logger = setup_logger("CommFramework", "logs/comm_framework.log")
         self.config = self.load_config(config_path)
+        
+        # Free occupied ports before starting
+        self.free_ports()
 
     def load_config(self, config_path):
         """Load the configuration file for port assignments."""
-        if not os.path.exists(config_path):
-            self.logger.error(f"❌ Config file not found: {config_path}")
-            return {}
-
         try:
             with open(config_path, "r") as file:
                 config = yaml.safe_load(file)
@@ -32,6 +33,23 @@ class CommFramework:
         except Exception as e:
             self.logger.error(f"❌ Failed to load configuration: {e}")
             return {}
+
+    def free_ports(self):
+        """Finds and kills processes using required ports before binding."""
+        for agent, ports in self.config.items():
+            port = ports.get("publisher")
+            if port:
+                self._kill_process_using_port(port)
+
+    def _kill_process_using_port(self, port):
+        """Kill process occupying a given port."""
+        for conn in psutil.net_connections():
+            if conn.laddr.port == port:
+                process = psutil.Process(conn.pid)
+                self.logger.warning(f"🔴 Port {port} in use by process {process.name()} (PID {conn.pid}). Terminating...")
+                process.terminate()
+                time.sleep(1)
+                self.logger.info(f"✅ Port {port} is now free.")
 
     def create_publisher(self, agent_name):
         """Create and bind a publisher socket for a given agent."""
@@ -50,7 +68,7 @@ class CommFramework:
             self.publishers[agent_name] = socket
             self.logger.info(f"📡 {agent_name} Publisher bound on port {port}")
             return socket
-        except zmq.ZMQError as e:
+        except Exception as e:
             self.logger.error(f"❌ Failed to bind publisher for {agent_name} on port {port}: {e}")
             return None
 
@@ -72,32 +90,22 @@ class CommFramework:
             self.subscribers[agent_name] = socket
             self.logger.info(f"🔍 {agent_name} Subscriber connected to port {port} with topic '{topic}'")
             return socket
-        except zmq.ZMQError as e:
+        except Exception as e:
             self.logger.error(f"❌ Failed to connect subscriber for {agent_name} on port {port}: {e}")
             return None
 
-    def send_message(self, agent_name, message):
-        """Send a message from a publisher."""
-        if agent_name not in self.publishers:
-            self.logger.error(f"❌ No publisher registered for {agent_name}.")
-            return
+    def cleanup(self):
+        """Cleanup all ZeroMQ sockets on shutdown."""
+        self.logger.info("🧹 Cleaning up ZeroMQ sockets...")
+        
+        for agent, socket in self.publishers.items():
+            socket.close()
+            self.logger.info(f"🔌 Closed publisher socket for {agent}")
+        
+        for agent, socket in self.subscribers.items():
+            socket.close()
+            self.logger.info(f"🔌 Closed subscriber socket for {agent}")
 
-        try:
-            self.publishers[agent_name].send_string(message)
-            self.logger.info(f"📤 {agent_name} sent message: {message}")
-        except zmq.ZMQError as e:
-            self.logger.error(f"❌ Failed to send message from {agent_name}: {e}")
+        self.context.term()
+        self.logger.info("✅ ZeroMQ context terminated.")
 
-    def receive_message(self, agent_name):
-        """Receive a message for a subscriber."""
-        if agent_name not in self.subscribers:
-            self.logger.error(f"❌ No subscriber registered for {agent_name}.")
-            return None
-
-        try:
-            message = self.subscribers[agent_name].recv_string()
-            self.logger.info(f"📥 {agent_name} received message: {message}")
-            return message
-        except zmq.ZMQError as e:
-            self.logger.error(f"❌ Failed to receive message for {agent_name}: {e}")
-            return None
