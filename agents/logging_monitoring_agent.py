@@ -15,6 +15,7 @@ class LoggingMonitoringAgent:
         """Initialize the Logging Monitoring Agent to collect logs from all agents."""
         self.comm = comm_framework
         self.logger = setup_logger("LoggingMonitoringAgent", "logs/logging_monitoring_agent.log")
+        self.logger.info("📊 Logging Monitoring Agent Started and ready to receive logs.")
         self.subscribers = {}
 
         # Define agents to monitor

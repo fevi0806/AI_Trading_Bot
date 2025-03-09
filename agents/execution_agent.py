@@ -11,11 +11,12 @@ sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from agents.comm_framework import CommFramework  
 from utils.logger import setup_logger
 
+
 class ExecutionAgent:
     def __init__(self, comm_framework):
         self.comm = comm_framework
         self.logger = setup_logger("ExecutionAgent", "logs/execution_agent.log")
-
+        self.logger.info("🚀 THIS IS A MANUAL TEST LOG TO CHECK LOGGING.")
         # ✅ Load ports dynamically from config.yml
         self.trade_sub = self.comm.create_subscriber("ExecutionAgent")  # Uses the correct port from config
         self.execution_pub = self.comm.create_publisher("ExecutionAgent")  # Uses the correct port from config

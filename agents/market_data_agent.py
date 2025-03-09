@@ -16,7 +16,11 @@ class MarketDataAgent:
     def __init__(self, comm_framework):
         self.comm = comm_framework
         self.publisher = self.comm.create_publisher("MarketDataAgent")
-        self.logger = setup_logger("MarketDataAgent", "logs/market_data_agent.log")
+
+        # ✅ Ensure logging is initialized correctly
+        log_file_path = os.path.join(os.path.dirname(__file__), "..", "logs", "market_data_agent.log")
+        self.logger = setup_logger("MarketDataAgent", log_file_path)
+
         self.tickers = ["QQQ", "SOXX", "SPY", "VGT", "ARKK"]
 
     def fetch_data(self, ticker):
