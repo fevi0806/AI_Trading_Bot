@@ -1,26 +1,22 @@
-import zmq
-import json
-import time
-import logging
 import os
+import pandas as pd
 import numpy as np
-import requests  # <-- Importamos requests para enviar métricas a Prometheus
+import yfinance as yf
 from stable_baselines3 import PPO
-import sys
-
-sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
-from utils.logger import setup_logger
-from agents.comm_framework import CommFramework
-
-PROMETHEUS_PUSHGATEWAY = "http://localhost:9091/metrics/job/trade_signals"
+import logging
 
 class StrategyAgent:
-    def __init__(self, comm_framework):
-        self.comm = comm_framework
-        self.trade_signal_pub = self.comm.create_publisher("StrategyAgent")
-        self.market_data_sub = self.comm.create_subscriber("StrategyAgent")
-        self.logger = setup_logger("StrategyAgent", "logs/strategy_agent.log")
-        self.running = True  # ✅ Allows graceful shutdown
+    def __init__(self):
+        """Initialize StrategyAgent with logging and trade tracking."""
+        self.last_trade_day = {}  # ✅ Track last trade date per ticker
+        self.market_data_cache = {}  # ✅ Cache fetched market data
+
+        # ✅ Initialize logger properly
+        self.logger = logging.getLogger("StrategyAgent")
+        self.logger.setLevel(logging.INFO)
+        console_handler = logging.StreamHandler()
+        console_handler.setFormatter(logging.Formatter('%(asctime)s - %(levelname)s - %(message)s'))
+        self.logger.addHandler(console_handler)
 
     def load_ppo_model(self, ticker):
         """Load PPO model for a specific ticker."""
@@ -36,75 +32,111 @@ class StrategyAgent:
             self.logger.error(f"❌ Model Load Error: {e}")
             return None
 
-    def send_trade_signal_to_prometheus(self, ticker, signal):
-        """Enviar trade signals a Prometheus."""
+    def fetch_market_data(self, ticker):
+        """Fetch the latest market data for analysis and cache it."""
+        if ticker in self.market_data_cache:
+            return self.market_data_cache[ticker]  # ✅ Use cached data
+
         try:
-            data = f'trade_signals{{ticker="{ticker}", signal="{signal}"}} 1\n'
-            response = requests.post(PROMETHEUS_PUSHGATEWAY, data=data)
-            if response.status_code == 200:
-                self.logger.info(f"📊 Sent trade signal to Prometheus: {ticker} -> {signal}")
-            else:
-                self.logger.warning(f"⚠️ Failed to send trade signal to Prometheus: {response.text}")
+            data = yf.download(ticker, period="60d", interval="1d")
+            if data.empty or "Close" not in data.columns:
+                self.logger.warning(f"⚠️ No valid market data for {ticker}.")
+                return None
+            self.market_data_cache[ticker] = data  # ✅ Cache the data
+            return data
         except Exception as e:
-            self.logger.error(f"❌ Prometheus Push Error: {e}")
+            self.logger.error(f"❌ Market Data Fetch Error: {e}")
+            return None
+
+    def calculate_indicators(self, data):
+        """Calculate trend, momentum, and volatility indicators."""
+        if data is None or data.empty or "Close" not in data.columns:
+            self.logger.error("❌ Indicator Calculation Failed: No Market Data")
+            return None
+
+        data["SMA_50"] = data["Close"].rolling(window=50).mean()
+        data["SMA_200"] = data["Close"].rolling(window=200).mean()
+        data["RSI"] = self.calculate_rsi(data["Close"])
+        data["ATR"] = self.calculate_atr(data)
+        data["MACD"], data["MACD_signal"] = self.calculate_macd(data)
+        return data
+
+    def calculate_rsi(self, close_prices, period=14):
+        """Calculate the Relative Strength Index (RSI)."""
+        delta = close_prices.diff()
+        gain = (delta.where(delta > 0, 0)).rolling(window=period).mean()
+        loss = (-delta.where(delta < 0, 0)).rolling(window=period).mean()
+        
+        loss.replace(0, np.nan, inplace=True)  # ✅ Prevent division by zero
+        rs = gain / loss
+        rsi = 100 - (100 / (1 + rs))
+        
+        return rsi.fillna(50)  # ✅ Default to neutral RSI (50) if missing
+
+    def calculate_atr(self, data, period=14):
+        """Calculate the Average True Range (ATR)."""
+        high_low = data["High"] - data["Low"]
+        high_close = abs(data["High"] - data["Close"].shift())
+        low_close = abs(data["Low"] - data["Close"].shift())
+        tr = pd.concat([high_low, high_close, low_close], axis=1).max(axis=1)
+        return tr.rolling(period).mean()
+
+    def calculate_macd(self, data, fast=12, slow=26, signal=9):
+        """Calculate MACD and its signal line."""
+        if len(data) < slow:
+            self.logger.warning(f"⚠️ Not enough data to calculate MACD.")
+            return np.zeros(len(data)), np.zeros(len(data))  
+        
+        fast_ema = data["Close"].ewm(span=fast, adjust=False).mean()
+        slow_ema = data["Close"].ewm(span=slow, adjust=False).mean()
+        macd = fast_ema - slow_ema
+        signal_line = macd.ewm(span=signal, adjust=False).mean()
+        return macd, signal_line
+
+    def market_regime(self, data):
+        """Detect if the market is bullish, bearish, or sideways."""
+        if data["SMA_50"].iloc[-1] > data["SMA_200"].iloc[-1]:  
+            return "BULLISH"
+        elif data["SMA_50"].iloc[-1] < data["SMA_200"].iloc[-1]:  
+            return "BEARISH"
+        return "SIDEWAYS"
 
     def predict_trade_signal(self, ticker):
-        """Generate a trade signal using the PPO model or fallback random choice."""
+        """Generate a trade signal using the defined strategy."""
         model = self.load_ppo_model(ticker)
-        if model is None:
-            return None
+        data = self.fetch_market_data(ticker)
 
-        try:
-            # Placeholder logic: Replace with actual prediction logic
-            signal = np.random.choice(["BUY", "SELL", "HOLD"])
-            self.logger.info(f"📊 {ticker} Signal: {signal}")
-            return signal
-        except Exception as e:
-            self.logger.error(f"❌ Model Prediction Error for {ticker}: {e}")
-            return None
+        if model is None or data is None:
+            return "HOLD"
 
-    def run(self):
-        """Continuously processes market data and generates trade signals."""
-        self.logger.info("🚀 Strategy Agent Started.")
+        data = self.calculate_indicators(data)
+        if data is None:
+            return "HOLD"
 
-        while self.running:
-            try:
-                if self.market_data_sub:
-                    message = self.market_data_sub.recv_string(flags=zmq.NOBLOCK)  # ✅ Non-blocking receive
-                    market_data = json.loads(message)
+        market_condition = self.market_regime(data)
+        latest_rsi = data["RSI"].iloc[-1]
+        latest_macd = data["MACD"].iloc[-1]
+        latest_macd_signal = data["MACD_signal"].iloc[-1]
 
-                    # ✅ Ensure market data contains necessary information
-                    if not isinstance(market_data, list) or not market_data:
-                        self.logger.warning("⚠️ Received malformed or empty market data.")
-                        continue
-                    
-                    ticker = market_data[0].get("Ticker")
-                    if not ticker:
-                        self.logger.warning("⚠️ Market data missing 'Ticker' field.")
-                        continue
+        self.logger.info(f"📊 Market Regime for {ticker}: {market_condition}")
+        self.logger.info(f"🔹 RSI: {latest_rsi:.2f}, MACD: {latest_macd:.2f}, MACD Signal: {latest_macd_signal:.2f}")
 
-                    signal = self.predict_trade_signal(ticker)
-                    if signal:
-                        trade_signal = json.dumps({"ticker": ticker, "signal": signal})
+        last_trade_date = self.last_trade_day.get(ticker)
+        if last_trade_date:
+            days_since_last_trade = (data.index[-1] - last_trade_date).days
+            if days_since_last_trade < 10:
+                self.logger.info(f"⏳ Trade cooldown active ({days_since_last_trade}/10 days). Holding position.")
+                return "HOLD"
 
-                        # ✅ Send trade signal to Prometheus
-                        self.send_trade_signal_to_prometheus(ticker, signal)
+        if market_condition in ["BULLISH", "SIDEWAYS"] and latest_rsi < 30:
+            self.last_trade_day[ticker] = data.index[-1]
+            self.logger.info(f"✅ Trade Signal: BUY for {ticker}")
+            return "BUY"
 
-                        # ✅ Ensure publisher is available before sending
-                        if self.trade_signal_pub and not self.trade_signal_pub.closed:
-                            self.trade_signal_pub.send_string(trade_signal)
-                            self.logger.info(f"📧 Trade Signal Sent: {trade_signal}")
-                        else:
-                            self.logger.warning("⚠️ Cannot send trade signal: Publisher socket closed.")
+        elif market_condition in ["BULLISH", "SIDEWAYS"] and latest_rsi > 65:
+            self.last_trade_day[ticker] = data.index[-1]
+            self.logger.info(f"✅ Trade Signal: SELL for {ticker}")
+            return "SELL"
 
-            except zmq.Again:
-                pass  # ✅ No message available, continue looping
-            except Exception as e:
-                self.logger.error(f"❌ Error in StrategyAgent: {e}")
-
-            time.sleep(60)  # ✅ Controlled delay to avoid infinite loop issues
-
-    def stop(self):
-        """Gracefully stops the StrategyAgent."""
-        self.logger.info("🛑 Stopping Strategy Agent...")
-        self.running = False  # ✅ Signal loop to exit
+        self.logger.info(f"⏳ Trade Signal: HOLD for {ticker}")
+        return "HOLD"

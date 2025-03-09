@@ -9,7 +9,7 @@ import sys
 # Ensure Python can find the parent directory
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-from utils.logger import setup_logger
+from utils.logger import get_logger
 
 class CommFramework:
     def __init__(self, config_path="config/config.yml"):
@@ -17,7 +17,7 @@ class CommFramework:
         self.context = zmq.Context()
         self.publishers = {}
         self.subscribers = {}
-        self.logger = setup_logger("CommFramework", "logs/comm_framework.log")
+        self.logger = get_logger("trading", "logs/comm_framework.log")
         self.config = self.load_config(config_path)
 
         if not self.config:
