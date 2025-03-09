@@ -20,5 +20,4 @@ ports:
     subscriber: 5564
 
   LoggingMonitoringAgent:
-    publisher: 5565
-    subscriber: 5566
+    subscriber: 5566  # ✅ Removed publisher (this agent only receives logs)

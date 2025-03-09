@@ -4,12 +4,15 @@ import time
 import logging
 import os
 import numpy as np
+import requests  # <-- Importamos requests para enviar métricas a Prometheus
 from stable_baselines3 import PPO
 import sys
 
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 from utils.logger import setup_logger
 from agents.comm_framework import CommFramework
+
+PROMETHEUS_PUSHGATEWAY = "http://localhost:9091/metrics/job/trade_signals"
 
 class StrategyAgent:
     def __init__(self, comm_framework):
@@ -32,6 +35,18 @@ class StrategyAgent:
         except Exception as e:
             self.logger.error(f"❌ Model Load Error: {e}")
             return None
+
+    def send_trade_signal_to_prometheus(self, ticker, signal):
+        """Enviar trade signals a Prometheus."""
+        try:
+            data = f'trade_signals{{ticker="{ticker}", signal="{signal}"}} 1\n'
+            response = requests.post(PROMETHEUS_PUSHGATEWAY, data=data)
+            if response.status_code == 200:
+                self.logger.info(f"📊 Sent trade signal to Prometheus: {ticker} -> {signal}")
+            else:
+                self.logger.warning(f"⚠️ Failed to send trade signal to Prometheus: {response.text}")
+        except Exception as e:
+            self.logger.error(f"❌ Prometheus Push Error: {e}")
 
     def predict_trade_signal(self, ticker):
         """Generate a trade signal using the PPO model or fallback random choice."""
@@ -71,6 +86,9 @@ class StrategyAgent:
                     signal = self.predict_trade_signal(ticker)
                     if signal:
                         trade_signal = json.dumps({"ticker": ticker, "signal": signal})
+
+                        # ✅ Send trade signal to Prometheus
+                        self.send_trade_signal_to_prometheus(ticker, signal)
 
                         # ✅ Ensure publisher is available before sending
                         if self.trade_signal_pub and not self.trade_signal_pub.closed:

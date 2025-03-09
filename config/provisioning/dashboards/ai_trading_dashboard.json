@@ -1,0 +1,24 @@
+{
+    "annotations": {
+      "list": []
+    },
+    "title": "AI Trading Dashboard",
+    "editable": true,
+    "panels": [
+      {
+        "title": "Trade Signals",
+        "type": "graph",
+        "targets": [
+          {
+            "expr": "trade_signals",
+            "legendFormat": "{{signal}}",
+            "refId": "A"
+          }
+        ]
+      }
+    ],
+    "schemaVersion": 16,
+    "version": 1,
+    "refresh": "5s"
+  }
+  
