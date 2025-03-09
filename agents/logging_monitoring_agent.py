@@ -15,13 +15,15 @@ class LoggingMonitoringAgent:
         """Initialize the Logging Monitoring Agent to collect logs from all agents."""
         self.comm = comm_framework
         self.logger = setup_logger("LoggingMonitoringAgent", "logs/logging_monitoring_agent.log")
+        self.running = True  # ✅ Enables graceful shutdown
+
         self.logger.info("📊 Logging Monitoring Agent Started and ready to receive logs.")
+
+        # ✅ List of agents to monitor logs
+        self.agents = ["MarketDataAgent", "SentimentAgent", "StrategyAgent", "RiskManagementAgent", "ExecutionAgent"]
         self.subscribers = {}
 
-        # Define agents to monitor
-        self.agents = ["MarketDataAgent", "SentimentAgent", "StrategyAgent", "RiskManagementAgent", "ExecutionAgent"]
-
-        # Subscribe to logs from all agents
+        # ✅ Subscribe to logs from all agents
         for agent in self.agents:
             try:
                 self.subscribers[agent] = self.comm.create_subscriber(agent, topic="LOG")
@@ -32,20 +34,31 @@ class LoggingMonitoringAgent:
 
     def run(self):
         """Continuously listen for logs from all agents."""
-        self.logger.info("📊 Logging Monitoring Agent Started.")
+        self.logger.info("📊 Logging Monitoring Agent Running...")
 
-        while True:
+        while self.running:
             for agent, subscriber in self.subscribers.items():
-                if subscriber is None:
-                    continue  # Skip if the subscription failed
+                if not subscriber:
+                    continue  # ✅ Skip if subscription failed
 
                 try:
-                    if subscriber.poll(100):  # 100 ms timeout to prevent blocking
-                        message = subscriber.recv_string()
+                    message = None
+                    try:
+                        message = subscriber.recv_string(flags=zmq.NOBLOCK)  # ✅ Non-blocking receive
+                    except zmq.Again:
+                        pass  # ✅ No new messages, continue looping
+
+                    if message:
                         self.logger.info(f"📝 {agent} Log: {message}")
+
                 except zmq.ZMQError as e:
-                    self.logger.error(f"❌ Error receiving log from {agent}: {e}")
+                    self.logger.error(f"❌ ZMQ Error receiving log from {agent}: {e}")
                 except Exception as e:
                     self.logger.error(f"❌ Unexpected error in LoggingMonitoringAgent for {agent}: {e}")
 
-            time.sleep(1)
+            time.sleep(1)  # ✅ Prevent CPU overuse
+
+    def stop(self):
+        """Gracefully stops the LoggingMonitoringAgent."""
+        self.logger.info("🛑 Stopping Logging Monitoring Agent...")
+        self.running = False  # ✅ Stops the loop properly
