@@ -1,43 +1,71 @@
 import logging
-import os
 import sys
+import requests
+import json
 
-def setup_logger(name, log_file, level=logging.INFO):
-    """
-    Set up a centralized logger that logs to both file and console.
-    Ensures multiple handlers are not added to prevent duplicate logs.
-    Fixes I/O closed file issues by keeping the file open.
-    """
+class Logger:
+    def __init__(self, module_name):
+        self.logger = logging.getLogger(module_name)
+        self.logger.setLevel(logging.DEBUG)
 
-    # ✅ Asegurar que la carpeta logs existe
-    log_dir = os.path.dirname(log_file)
-    if log_dir and not os.path.exists(log_dir):
-        os.makedirs(log_dir)
+        # Formato del log
+        formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
-    logger = logging.getLogger(name)
+        # Consola
+        console_handler = logging.StreamHandler(sys.stdout)
+        console_handler.setFormatter(formatter)
+        self.logger.addHandler(console_handler)
 
-    # ✅ Evita añadir múltiples handlers si ya existen
-    if logger.hasHandlers():
-        return logger
+        # Loki (Promtail)
+        self.loki_url = "http://localhost:3100/loki/api/v1/push"  # Cambia si usas otro host
 
-    logger.setLevel(level)
-    logger.propagate = False  # Previene duplicados
+    def log(self, level, message, extra_fields=None):
+        """ Registra un mensaje en la consola y en Loki """
+        if extra_fields is None:
+            extra_fields = {}
 
-    # ✅ Manejador de archivo SIN delay para evitar cierres de archivo
-    file_handler = logging.FileHandler(log_file, encoding="utf-8", mode="a", delay=False)
-    file_handler.setFormatter(logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s"))
+        log_entry = {"module": self.logger.name, **extra_fields}
+        formatted_message = f"{message} | {json.dumps(log_entry)}"
 
-    # ✅ Manejador de consola
-    stream_handler = logging.StreamHandler(sys.stdout)
-    stream_handler.setFormatter(logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s"))
+        if level == "debug":
+            self.logger.debug(formatted_message)
+        elif level == "info":
+            self.logger.info(formatted_message)
+        elif level == "warning":
+            self.logger.warning(formatted_message)
+        elif level == "error":
+            self.logger.error(formatted_message)
+        elif level == "critical":
+            self.logger.critical(formatted_message)
 
-    # ✅ Previene errores de escritura en Windows
-    if sys.platform == "win32":
-        import io
-        sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
-        sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
+        # Enviar log a Loki
+        self.send_to_loki(level, message, log_entry)
 
-    logger.addHandler(file_handler)
-    logger.addHandler(stream_handler)
+    def send_to_loki(self, level, message, log_entry):
+        """ Envía los logs a Loki en formato JSON """
+        payload = {
+            "streams": [
+                {
+                    "stream": {"level": level, "module": self.logger.name},
+                    "values": [[str(int(1e9 * logging.time.time())), message]]
+                }
+            ]
+        }
+        try:
+            requests.post(self.loki_url, json=payload)
+        except requests.exceptions.RequestException as e:
+            self.logger.error(f"Error enviando log a Loki: {e}")
 
-    return logger
+# Inicialización para módulos específicos
+trading_logger = Logger("trading")
+backtest_logger = Logger("backtesting")
+
+# Compatibilidad con módulos existentes
+def get_logger(module_name):
+    """ Devuelve un logger según el módulo """
+    if module_name == "trading":
+        return trading_logger
+    elif module_name == "backtesting":
+        return backtest_logger
+    else:
+        return Logger(module_name)
